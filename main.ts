@@ -1131,8 +1131,6 @@ namespace sensors {
     const data = [0, 0, 0, 0, 0]
     let startTime = control.micros()
 
-    if (control.hardwareVersion().slice(0, 1) !== '1') { // V2
-        // TODO: V2 bug
         pins.digitalReadPin(DigitalPin.P0);
         pins.digitalReadPin(DigitalPin.P1);
         pins.digitalReadPin(DigitalPin.P2);
@@ -1173,31 +1171,7 @@ namespace sensors {
                 buffer[dataBits] = 1
             }
         }
-    } else { // V1
-        // 1.start signal
-        pins.digitalWritePin(dht11pin, 0)
-        basic.pause(18)
 
-        // 2.pull up and wait 40us
-        pins.setPull(dht11pin, PinPullMode.PullUp)
-        pins.digitalReadPin(dht11pin)
-        control.waitMicros(40)
-
-        // 3.read data
-        if (pins.digitalReadPin(dht11pin) === 0) {
-            while (pins.digitalReadPin(dht11pin) === 0);
-            while (pins.digitalReadPin(dht11pin) === 1);
-
-            for (let dataBits = 0; dataBits < 40; dataBits++) {
-                while (pins.digitalReadPin(dht11pin) === 1);
-                while (pins.digitalReadPin(dht11pin) === 0);
-                control.waitMicros(28)
-                if (pins.digitalReadPin(dht11pin) === 1) {
-                    buffer[dataBits] = 1
-                }
-            }
-        }
-    }
 
     for (let i = 0; i < 5; i++) {
         for (let j = 0; j < 8; j++) {
